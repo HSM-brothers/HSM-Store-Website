@@ -1,4 +1,4 @@
-name: Deploy Frontend to GitHub Pages
+name: Build & Deploy (GitHub Pages)
 
 on:
   push:
@@ -11,23 +11,18 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
 concurrency:
   group: "pages"
   cancel-in-progress: true
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Configure Pages
-        uses: actions/configure-pages@v6
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -44,19 +39,17 @@ jobs:
           NEXT_PUBLIC_BASE_PATH: "/HSM-Store-Website"
         run: npm -w frontend run build
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v6
-        with:
-          name: github-pages
-          path: frontend/out
+      - name: Publish to gh-pages branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
 
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+          # Create a clean gh-pages branch with only the exported site
+          git fetch origin gh-pages || true
+          git switch --orphan gh-pages
+          git rm -rf . >/dev/null 2>&1 || true
+          cp -R frontend/out/* .
+          touch .nojekyll
+          git add -A
+          git commit -m "Deploy to GitHub Pages" || exit 0
+          git push -f origin gh-pages
