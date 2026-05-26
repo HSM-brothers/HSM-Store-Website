@@ -5,7 +5,6 @@ import { getMessages } from "next-intl/server";
 import type { CSSProperties } from "react";
 import Providers from "@/components/Providers";
 import { getLocaleDirection, isAppLocale, locales, type AppLocale } from "@/i18n/routing";
-import "../globals.css";
 
 const latin = Be_Vietnam_Pro({
   subsets: ["latin"],
@@ -45,18 +44,15 @@ export default async function LocaleLayout({
   const style = { "--font-ui": fontUi } as CSSProperties;
 
   return (
-    <html
-      lang={locale}
-      dir={dir}
-      suppressHydrationWarning
+    <section
       className={`${latin.variable} ${arabic.variable} h-full antialiased`}
       style={style}
+      dir={dir}
+      lang={locale}
     >
-      <body className="min-h-full bg-[var(--background)] text-[var(--foreground)]">
-        <Providers locale={locale} messages={messages} timeZone="Asia/Beirut">
-          {children}
-        </Providers>
-      </body>
-    </html>
+      <Providers locale={locale} messages={messages} timeZone="Asia/Beirut">
+        {children}
+      </Providers>
+    </section>
   );
 }
