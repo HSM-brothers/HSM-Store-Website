@@ -1,0 +1,21 @@
+name = "hsm-store-api"
+main = "src/index.ts"
+compatibility_date = "2026-05-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Vars that aren't secrets — overridable per env.
+[vars]
+ALLOWED_ORIGINS = "https://hsm-brothers.github.io"
+CACHE_TTL_SECONDS = "60"
+
+# Secrets (set via: wrangler secret put <NAME>)
+# - TURSO_URL
+# - TURSO_AUTH_TOKEN
+# - R2_PUBLIC_BASE
+
+[observability]
+enabled = true
+
+# Optional: tighten this per-environment later.
+# [env.production]
+# routes = [{ pattern = "api.hsmstore.example/*", custom_domain = true }]

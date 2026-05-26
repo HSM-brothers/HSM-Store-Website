@@ -1,0 +1,4 @@
+# Copy to .dev.vars for `wrangler dev`. Never commit the real file.
+TURSO_URL="libsql://<your-db>.turso.io"
+TURSO_AUTH_TOKEN="<read-only-token>"
+R2_PUBLIC_BASE="https://pub-<hash>.r2.dev"

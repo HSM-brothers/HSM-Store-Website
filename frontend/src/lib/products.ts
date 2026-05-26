@@ -1,92 +1,58 @@
-export type ProductCategory =
-  | "produce"
-  | "dairy"
-  | "bakery"
-  | "snacks"
-  | "drinks"
-  | "household";
+// Product data fetched from the Cloudflare Worker proxy in front of Turso.
+// The worker URL is build-time-configured via NEXT_PUBLIC_API_BASE; the
+// fallback is the production deployment so dev builds still work without
+// extra env setup.
+
+const DEFAULT_API_BASE = "https://hsm-store-api.housam-kak20.workers.dev";
+
+export const API_BASE =
+  (process.env.NEXT_PUBLIC_API_BASE?.replace(/\/+$/, "") || DEFAULT_API_BASE);
+
+export type Currency = "USD" | "LBP";
 
 export type Product = {
   id: string;
-  name: {
-    en: string;
-    ar: string;
-  };
-  category: ProductCategory;
-  priceUsd: number;
+  name: string;
+  category: string | null;
+  unit: string | null;
+  selling_price: number | null;
+  selling_price_currency: Currency | null;
+  sku_barcode: string;
+  in_stock: boolean;
+  image_url: string | null;
 };
 
-export const mockProducts: Product[] = [
-  {
-    id: "p01",
-    name: { en: "Bananas (1kg)", ar: "موز (1 كغ)" },
-    category: "produce",
-    priceUsd: 1.99,
-  },
-  {
-    id: "p02",
-    name: { en: "Tomatoes (1kg)", ar: "بندورة (1 كغ)" },
-    category: "produce",
-    priceUsd: 2.25,
-  },
-  {
-    id: "p03",
-    name: { en: "Milk (1L)", ar: "حليب (1 لتر)" },
-    category: "dairy",
-    priceUsd: 1.49,
-  },
-  {
-    id: "p04",
-    name: { en: "Labneh (500g)", ar: "لبنة (500غ)" },
-    category: "dairy",
-    priceUsd: 2.95,
-  },
-  {
-    id: "p05",
-    name: { en: "Arabic Bread", ar: "خبز عربي" },
-    category: "bakery",
-    priceUsd: 0.99,
-  },
-  {
-    id: "p06",
-    name: { en: "Croissant", ar: "كرواسون" },
-    category: "bakery",
-    priceUsd: 0.75,
-  },
-  {
-    id: "p07",
-    name: { en: "Potato Chips", ar: "شيبس بطاطا" },
-    category: "snacks",
-    priceUsd: 1.25,
-  },
-  {
-    id: "p08",
-    name: { en: "Chocolate Bar", ar: "لوح شوكولا" },
-    category: "snacks",
-    priceUsd: 0.85,
-  },
-  {
-    id: "p09",
-    name: { en: "Orange Juice", ar: "عصير برتقال" },
-    category: "drinks",
-    priceUsd: 1.8,
-  },
-  {
-    id: "p10",
-    name: { en: "Sparkling Water", ar: "مياه غازية" },
-    category: "drinks",
-    priceUsd: 0.65,
-  },
-  {
-    id: "p11",
-    name: { en: "Dish Soap", ar: "سائل جلي" },
-    category: "household",
-    priceUsd: 2.1,
-  },
-  {
-    id: "p12",
-    name: { en: "Paper Towels", ar: "مناشف ورقية" },
-    category: "household",
-    priceUsd: 2.75,
+type ProductsResponse = { products: Product[]; count: number };
+type CategoriesResponse = { categories: string[] };
+
+export async function fetchProducts(opts?: {
+  category?: string;
+  q?: string;
+  limit?: number;
+  signal?: AbortSignal;
+}): Promise<Product[]> {
+  const url = new URL(`${API_BASE}/products`);
+  if (opts?.category) url.searchParams.set("category", opts.category);
+  if (opts?.q) url.searchParams.set("q", opts.q);
+  if (opts?.limit) url.searchParams.set("limit", String(opts.limit));
+
+  const res = await fetch(url.toString(), { signal: opts?.signal });
+  if (!res.ok) throw new Error(`products fetch failed: ${res.status}`);
+  const body = (await res.json()) as ProductsResponse;
+  return body.products;
+}
+
+export async function fetchCategories(signal?: AbortSignal): Promise<string[]> {
+  const res = await fetch(`${API_BASE}/categories`, { signal });
+  if (!res.ok) throw new Error(`categories fetch failed: ${res.status}`);
+  const body = (await res.json()) as CategoriesResponse;
+  return body.categories;
+}
+
+export function formatPrice(price: number | null, currency: Currency | null): string {
+  if (price == null) return "—";
+  if (currency === "LBP") {
+    return `${Math.round(price).toLocaleString()} LBP`;
   }
-];
+  return `$${price.toFixed(2)}`;
+}

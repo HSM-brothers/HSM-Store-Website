@@ -2,6 +2,8 @@
 
 import { NextIntlClientProvider } from "next-intl";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
+import { CartProvider } from "@/components/CartProvider";
+import CartDrawer from "@/components/CartDrawer";
 
 export default function Providers({
   children,
@@ -21,7 +23,10 @@ export default function Providers({
         messages={messages}
         timeZone={timeZone}
       >
-        {children}
+        <CartProvider>
+          {children}
+          <CartDrawer />
+        </CartProvider>
       </NextIntlClientProvider>
     </ThemeProvider>
   );
