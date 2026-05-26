@@ -2,8 +2,8 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import { usePathname, useRouter } from "next/navigation";
-import { useTheme } from "next-themes";
 import { defaultLocale, locales, type AppLocale } from "@/i18n/routing";
+import { type ThemeMode, useTheme } from "@/components/theme/ThemeProvider";
 
 function replaceLocaleInPath(pathname: string, nextLocale: AppLocale) {
   const parts = pathname.split("/");
@@ -54,8 +54,8 @@ export default function Header() {
           <select
             id="theme"
             className="h-9 rounded-full border border-black/10 bg-white px-3 text-sm dark:border-white/10 dark:bg-zinc-950"
-            value={theme ?? "system"}
-            onChange={(e) => setTheme(e.target.value)}
+            value={theme}
+            onChange={(e) => setTheme(e.target.value as ThemeMode)}
           >
             <option value="light">{t("nav.light")}</option>
             <option value="dark">{t("nav.dark")}</option>

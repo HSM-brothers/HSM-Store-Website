@@ -53,7 +53,7 @@ export default async function LocaleLayout({
       style={style}
     >
       <body className="min-h-full bg-[var(--background)] text-[var(--foreground)]">
-        <Providers locale={locale} messages={messages}>
+        <Providers locale={locale} messages={messages} timeZone="Asia/Beirut">
           {children}
         </Providers>
       </body>
