@@ -1,0 +1,27 @@
+{
+  "nav": {
+    "title": "HSM Mini Market",
+    "searchPlaceholder": "Search products…",
+    "language": "Language",
+    "theme": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "english": "English",
+    "arabic": "Arabic"
+  },
+  "home": {
+    "subtitle": "Mock catalog for now — backend coming next.",
+    "results": "{count, plural, =0 {No results} =1 {# result} other {# results}}",
+    "category": "Category",
+    "price": "Price",
+    "addToCart": "Add to cart"
+  },
+  "categories": {
+    "dairy": "Dairy",
+    "bakery": "Bakery",
+    "snacks": "Snacks",
+    "drinks": "Drinks",
+    "household": "Household",
+    "produce": "Produce"
+  }
+}
