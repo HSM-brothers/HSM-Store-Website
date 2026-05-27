@@ -36,14 +36,20 @@ export async function fetchProducts(opts?: {
   if (opts?.q) url.searchParams.set("q", opts.q);
   if (opts?.limit) url.searchParams.set("limit", String(opts.limit));
 
-  const res = await fetch(url.toString(), { signal: opts?.signal });
+  const res = await fetch(url.toString(), {
+    signal: opts?.signal,
+    cache: "no-store",
+  });
   if (!res.ok) throw new Error(`products fetch failed: ${res.status}`);
   const body = (await res.json()) as ProductsResponse;
   return body.products;
 }
 
 export async function fetchCategories(signal?: AbortSignal): Promise<string[]> {
-  const res = await fetch(`${API_BASE}/categories`, { signal });
+  const res = await fetch(`${API_BASE}/categories`, {
+    signal,
+    cache: "no-store",
+  });
   if (!res.ok) throw new Error(`categories fetch failed: ${res.status}`);
   const body = (await res.json()) as CategoriesResponse;
   return body.categories;
