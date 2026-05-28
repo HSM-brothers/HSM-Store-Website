@@ -49,7 +49,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     } catch {
       // Ignore corrupt storage; start with empty cart.
     }
-    setHydrated(true);
+    queueMicrotask(() => setHydrated(true));
   }, []);
 
   // Persist on change (after initial hydration to avoid clobbering with EMPTY).
