@@ -35,14 +35,15 @@ jobs:
 
       - name: Build static site
         env:
-          NEXT_TELEMETRY_DISABLED: "1"
-          NEXT_PUBLIC_BASE_PATH: "/HSM-Store-Website"
+          VITE_BASE_PATH: "/HSM-Store-Website/"
+          VITE_API_BASE: "https://hsm-store-api.housam-kak20.workers.dev"
+          VITE_WHATSAPP_NUMBER: ${{ vars.WHATSAPP_NUMBER }}
         run: npm -w frontend run build
 
       - name: Publish to gh-pages branch
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./frontend/out
+          publish_dir: ./frontend/dist
           publish_branch: gh-pages
           force_orphan: true

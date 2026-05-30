@@ -1,25 +1,19 @@
-"use client";
-
 import { useEffect, useState } from "react";
-import { useLocale, useTranslations } from "next-intl";
+import { useI18n } from "@/i18n/I18nProvider";
 import { useCart } from "@/components/CartProvider";
 import { buildWhatsAppUrl, formatLineTotal, formatSubtotal } from "@/lib/cart";
 
-// Falls back to a placeholder so the UI works even if the env var isn't set.
-// Replace via NEXT_PUBLIC_WHATSAPP_NUMBER at build time.
+// Replace via VITE_WHATSAPP_NUMBER at build time.
 const WHATSAPP_NUMBER =
-  process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "+96100000000";
+  import.meta.env.VITE_WHATSAPP_NUMBER || "+96100000000";
 
 export default function CartDrawer() {
-  const t = useTranslations();
-  const locale = useLocale();
-  const dir = locale === "ar" ? "rtl" : "ltr";
+  const { t, dir } = useI18n();
   const { state, dispatch, isOpen, closeCart } = useCart();
   const [customerName, setCustomerName] = useState("");
 
-  // Lock body scroll when the drawer is open.
+  // Lock body scroll while open.
   useEffect(() => {
-    if (typeof document === "undefined") return;
     const prev = document.body.style.overflow;
     document.body.style.overflow = isOpen ? "hidden" : prev;
     return () => {
@@ -39,11 +33,15 @@ export default function CartDrawer() {
 
   if (!isOpen) return null;
 
-  const sideClass = dir === "rtl" ? "left-0" : "right-0";
-  const borderClass = dir === "rtl" ? "border-r" : "border-l";
+  const sideClass = dir === "rtl" ? "left-0 border-r" : "right-0 border-l";
+
   const handleCheckout = () => {
     if (state.items.length === 0) return;
-    const url = buildWhatsAppUrl(WHATSAPP_NUMBER, state, customerName.trim() || undefined);
+    const url = buildWhatsAppUrl(
+      WHATSAPP_NUMBER,
+      state,
+      customerName.trim() || undefined,
+    );
     window.open(url, "_blank", "noopener,noreferrer");
   };
 
@@ -56,14 +54,14 @@ export default function CartDrawer() {
         className="absolute inset-0 bg-black/40 backdrop-blur-sm"
       />
       <aside
-        className={`absolute top-0 ${sideClass} ${borderClass} flex h-full w-full max-w-md flex-col border-black/10 bg-white shadow-2xl dark:border-white/10 dark:bg-zinc-950`}
+        className={`absolute top-0 ${sideClass} flex h-full w-full max-w-md flex-col border-line bg-bg shadow-2xl`}
       >
-        <header className="flex items-center justify-between gap-3 border-b border-black/10 px-5 py-4 dark:border-white/10">
+        <header className="flex items-center justify-between gap-3 border-b border-line px-5 py-4">
           <h2 className="text-base font-semibold">{t("cart.title")}</h2>
           <button
             type="button"
             onClick={closeCart}
-            className="rounded-full px-3 py-1 text-sm text-zinc-600 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-900"
+            className="rounded-full px-3 py-1 text-sm text-fg-muted transition-colors hover:bg-bg-subtle hover:text-fg"
           >
             {t("cart.close")}
           </button>
@@ -73,20 +71,17 @@ export default function CartDrawer() {
           {state.items.length === 0 ? (
             <div className="flex h-full flex-col items-center justify-center text-center">
               <div className="text-4xl">🛒</div>
-              <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-300">
-                {t("cart.empty")}
-              </p>
+              <p className="mt-3 text-sm text-fg-muted">{t("cart.empty")}</p>
             </div>
           ) : (
             <ul className="flex flex-col gap-3">
               {state.items.map((item) => (
                 <li
                   key={item.id}
-                  className="flex gap-3 rounded-2xl border border-black/10 p-3 dark:border-white/10"
+                  className="flex gap-3 rounded-2xl border border-line p-3"
                 >
-                  <div className="size-16 shrink-0 overflow-hidden rounded-xl bg-zinc-100 dark:bg-zinc-900">
+                  <div className="size-16 shrink-0 overflow-hidden rounded-xl bg-bg-subtle">
                     {item.image_url ? (
-                      // eslint-disable-next-line @next/next/no-img-element
                       <img
                         src={item.image_url}
                         alt={item.name}
@@ -94,7 +89,7 @@ export default function CartDrawer() {
                         className="size-full object-cover"
                       />
                     ) : (
-                      <div className="flex size-full items-center justify-center text-xs text-zinc-400">
+                      <div className="flex size-full items-center justify-center text-xs text-fg-muted">
                         —
                       </div>
                     )}
@@ -106,7 +101,7 @@ export default function CartDrawer() {
                           {item.name}
                         </div>
                         {item.unit && (
-                          <div className="text-xs text-zinc-500 dark:text-zinc-400">
+                          <div className="text-xs text-fg-muted">
                             {item.unit}
                           </div>
                         )}
@@ -114,18 +109,20 @@ export default function CartDrawer() {
                       <button
                         type="button"
                         onClick={() => dispatch({ type: "remove", id: item.id })}
-                        className="rounded-full px-2 py-1 text-xs text-zinc-500 hover:bg-zinc-100 hover:text-red-600 dark:text-zinc-400 dark:hover:bg-zinc-900"
+                        className="rounded-full px-2 py-1 text-xs text-fg-muted transition-colors hover:bg-bg-subtle hover:text-red-600"
                         aria-label={t("cart.remove")}
                       >
                         ✕
                       </button>
                     </div>
                     <div className="mt-2 flex items-center justify-between">
-                      <div className="inline-flex items-center rounded-full border border-black/10 dark:border-white/10">
+                      <div className="inline-flex items-center rounded-full border border-line">
                         <button
                           type="button"
-                          onClick={() => dispatch({ type: "decrement", id: item.id })}
-                          className="px-3 py-1 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-900"
+                          onClick={() =>
+                            dispatch({ type: "decrement", id: item.id })
+                          }
+                          className="px-3 py-1 text-sm transition-colors hover:bg-bg-subtle"
                           aria-label={t("cart.decrement")}
                         >
                           −
@@ -135,8 +132,10 @@ export default function CartDrawer() {
                         </span>
                         <button
                           type="button"
-                          onClick={() => dispatch({ type: "increment", id: item.id })}
-                          className="px-3 py-1 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-900"
+                          onClick={() =>
+                            dispatch({ type: "increment", id: item.id })
+                          }
+                          className="px-3 py-1 text-sm transition-colors hover:bg-bg-subtle"
                           aria-label={t("cart.increment")}
                         >
                           +
@@ -154,20 +153,18 @@ export default function CartDrawer() {
         </div>
 
         {state.items.length > 0 && (
-          <footer className="flex flex-col gap-3 border-t border-black/10 px-5 py-4 dark:border-white/10">
+          <footer className="flex flex-col gap-3 border-t border-line px-5 py-4">
             <div className="flex items-center justify-between text-sm">
-              <span className="text-zinc-600 dark:text-zinc-300">
-                {t("cart.subtotal")}
-              </span>
+              <span className="text-fg-muted">{t("cart.subtotal")}</span>
               <span className="font-semibold">{formatSubtotal(state)}</span>
             </div>
-            <label className="flex flex-col gap-1 text-xs text-zinc-600 dark:text-zinc-300">
+            <label className="flex flex-col gap-1 text-xs text-fg-muted">
               {t("cart.yourName")}
               <input
                 value={customerName}
                 onChange={(e) => setCustomerName(e.target.value)}
                 placeholder={t("cart.yourNamePlaceholder")}
-                className="h-10 rounded-xl border border-black/10 bg-white px-3 text-sm outline-none ring-orange-400/30 focus:ring-4 dark:border-white/10 dark:bg-zinc-950"
+                className="h-10 rounded-xl border border-line bg-bg px-3 text-sm text-fg outline-none focus:border-fg"
               />
             </label>
             <button
@@ -181,7 +178,7 @@ export default function CartDrawer() {
             <button
               type="button"
               onClick={() => dispatch({ type: "clear" })}
-              className="h-9 rounded-full text-sm text-zinc-600 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-900"
+              className="h-9 rounded-full text-sm text-fg-muted transition-colors hover:bg-bg-subtle hover:text-fg"
             >
               {t("cart.clear")}
             </button>

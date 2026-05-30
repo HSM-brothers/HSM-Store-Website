@@ -1,5 +1,4 @@
-import type { Currency, Product } from "@/lib/products";
-import { formatPrice } from "@/lib/products";
+import { formatPrice, type Currency, type Product } from "@/lib/products";
 
 export type CartItem = {
   id: string;
@@ -106,7 +105,6 @@ export function formatLineTotal(item: CartItem): string {
 }
 
 // Build a human-readable WhatsApp message from the cart state.
-// Returns the URL-encoded text ready to drop into wa.me.
 export function buildOrderText(state: CartState, customerName?: string): string {
   const lines: string[] = [];
   lines.push("HSM Mini Market — New order");

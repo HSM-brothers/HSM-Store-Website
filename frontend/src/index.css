@@ -1,0 +1,88 @@
+@import "tailwindcss";
+
+/* Class-based dark mode (toggled on <html class="dark">). */
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  /* Warm, curated cream palette (things.com-inspired). */
+  --bg: #f5f4ef;
+  --bg-subtle: #eeece4;
+  --card: #ffffff;
+  --fg: #181818;
+  --fg-muted: #6f6f68;
+  --line: #e7e4dc;
+  --pill: #f1e7c4;
+  --pill-fg: #6d5618;
+  --accent: #181818;
+  --accent-fg: #ffffff;
+
+  --font-latin: "Be Vietnam Pro", ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-arabic: "Noto Kufi Arabic", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Fraunces", Georgia, "Times New Roman", serif;
+  --font-ui: var(--font-latin);
+}
+
+.dark {
+  --bg: #141413;
+  --bg-subtle: #1d1d1b;
+  --card: #1e1e1c;
+  --fg: #f1efe9;
+  --fg-muted: #9b988e;
+  --line: #2c2b27;
+  --pill: #3a3210;
+  --pill-fg: #e8d9a0;
+  --accent: #f1efe9;
+  --accent-fg: #141413;
+}
+
+/* Arabic / RTL switches the UI font. */
+html[dir="rtl"] {
+  --font-ui: var(--font-arabic);
+  --font-serif: var(--font-arabic);
+  text-rendering: optimizeLegibility;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-subtle: var(--bg-subtle);
+  --color-card: var(--card);
+  --color-fg: var(--fg);
+  --color-fg-muted: var(--fg-muted);
+  --color-line: var(--line);
+  --color-pill: var(--pill);
+  --color-pill-fg: var(--pill-fg);
+  --color-accent: var(--accent);
+  --color-accent-fg: var(--accent-fg);
+  --font-sans: var(--font-ui);
+  --font-serif: var(--font-serif);
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-ui);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Hide scrollbars on the horizontal category rows. */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+::selection {
+  background: var(--fg);
+  color: var(--bg);
+}

@@ -1,5 +1,3 @@
-"use client";
-
 import {
   createContext,
   useCallback,
@@ -11,6 +9,8 @@ import {
 
 export type ThemeMode = "light" | "dark" | "system";
 
+const STORAGE_KEY = "hsm.theme.v1";
+
 type ThemeContextValue = {
   theme: ThemeMode;
   setTheme: (theme: ThemeMode) => void;
@@ -20,16 +20,14 @@ type ThemeContextValue = {
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 function getSystemTheme(): "light" | "dark" {
-  if (typeof window === "undefined") return "light";
   return window.matchMedia("(prefers-color-scheme: dark)").matches
     ? "dark"
     : "light";
 }
 
-function applyThemeToDocument(resolvedTheme: "light" | "dark") {
-  if (typeof document === "undefined") return;
-  const root = document.documentElement;
-  root.classList.toggle("dark", resolvedTheme === "dark");
+function applyTheme(resolved: "light" | "dark") {
+  document.documentElement.classList.toggle("dark", resolved === "dark");
+  document.documentElement.style.colorScheme = resolved;
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
@@ -37,23 +35,20 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [resolvedTheme, setResolvedTheme] = useState<"light" | "dark">("light");
 
   useEffect(() => {
-    const stored = window.localStorage.getItem("theme") as ThemeMode | null;
+    const stored = window.localStorage.getItem(STORAGE_KEY) as ThemeMode | null;
     if (stored === "light" || stored === "dark" || stored === "system") {
-      queueMicrotask(() => setThemeState(stored));
+      setThemeState(stored);
     }
   }, []);
 
-  const recompute = useCallback(
-    (nextTheme: ThemeMode) => {
-      const resolved = nextTheme === "system" ? getSystemTheme() : nextTheme;
-      setResolvedTheme(resolved);
-      applyThemeToDocument(resolved);
-    },
-    [setResolvedTheme]
-  );
+  const recompute = useCallback((next: ThemeMode) => {
+    const resolved = next === "system" ? getSystemTheme() : next;
+    setResolvedTheme(resolved);
+    applyTheme(resolved);
+  }, []);
 
   useEffect(() => {
-    queueMicrotask(() => recompute(theme));
+    recompute(theme);
   }, [theme, recompute]);
 
   useEffect(() => {
@@ -61,31 +56,23 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const listener = () => {
       if (theme === "system") recompute("system");
     };
-
-    if (typeof media.addEventListener === "function") {
-      media.addEventListener("change", listener);
-      return () => media.removeEventListener("change", listener);
-    }
-
-    // Safari < 14
-    media.addListener(listener);
-    return () => media.removeListener(listener);
+    media.addEventListener("change", listener);
+    return () => media.removeEventListener("change", listener);
   }, [theme, recompute]);
 
-  const setTheme = useCallback(
-    (nextTheme: ThemeMode) => {
-      setThemeState(nextTheme);
-      window.localStorage.setItem("theme", nextTheme);
-    },
-    [setThemeState]
-  );
+  const setTheme = useCallback((next: ThemeMode) => {
+    setThemeState(next);
+    window.localStorage.setItem(STORAGE_KEY, next);
+  }, []);
 
   const value = useMemo(
     () => ({ theme, setTheme, resolvedTheme }),
-    [theme, setTheme, resolvedTheme]
+    [theme, setTheme, resolvedTheme],
   );
 
-  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
+  return (
+    <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
+  );
 }
 
 export function useTheme() {

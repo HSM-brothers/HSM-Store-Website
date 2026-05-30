@@ -1,5 +1,3 @@
-"use client";
-
 import {
   createContext,
   useCallback,
@@ -37,7 +35,6 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   // Load from localStorage once on mount.
   useEffect(() => {
-    if (typeof window === "undefined") return;
     try {
       const raw = window.localStorage.getItem(STORAGE_KEY);
       if (raw) {
@@ -47,14 +44,14 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         }
       }
     } catch {
-      // Ignore corrupt storage; start with empty cart.
+      // Ignore corrupt storage; start with an empty cart.
     }
-    queueMicrotask(() => setHydrated(true));
+    setHydrated(true);
   }, []);
 
-  // Persist on change (after initial hydration to avoid clobbering with EMPTY).
+  // Persist on change (after hydration so we don't clobber with EMPTY).
   useEffect(() => {
-    if (!hydrated || typeof window === "undefined") return;
+    if (!hydrated) return;
     try {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     } catch {

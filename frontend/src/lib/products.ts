@@ -1,12 +1,12 @@
-// Product data fetched from the Cloudflare Worker proxy in front of Turso.
-// The worker URL is build-time-configured via NEXT_PUBLIC_API_BASE; the
-// fallback is the production deployment so dev builds still work without
-// extra env setup.
+// Product data fetched from the Cloudflare Worker proxy in front of Turso + R2.
+//
+// - In dev we hit "/api", which Vite proxies to the Worker server-side so the
+//   browser never triggers a CORS check (see vite.config.ts).
+// - In the production build we hit the Worker directly via VITE_API_BASE; the
+//   GitHub Pages origin is on the Worker's CORS allowlist.
 
-const DEFAULT_API_BASE = "https://hsm-store-api.housam-kak20.workers.dev";
-
-export const API_BASE =
-  (process.env.NEXT_PUBLIC_API_BASE?.replace(/\/+$/, "") || DEFAULT_API_BASE);
+const RAW_BASE = import.meta.env.VITE_API_BASE?.replace(/\/+$/, "");
+export const API_BASE = RAW_BASE || "/api";
 
 export type Currency = "USD" | "LBP";
 
@@ -31,31 +31,29 @@ export async function fetchProducts(opts?: {
   limit?: number;
   signal?: AbortSignal;
 }): Promise<Product[]> {
-  const url = new URL(`${API_BASE}/products`);
+  const url = new URL(`${API_BASE}/products`, window.location.origin);
   if (opts?.category) url.searchParams.set("category", opts.category);
   if (opts?.q) url.searchParams.set("q", opts.q);
   if (opts?.limit) url.searchParams.set("limit", String(opts.limit));
 
-  const res = await fetch(url.toString(), {
-    signal: opts?.signal,
-    cache: "no-store",
-  });
+  const res = await fetch(url.toString(), { signal: opts?.signal });
   if (!res.ok) throw new Error(`products fetch failed: ${res.status}`);
   const body = (await res.json()) as ProductsResponse;
   return body.products;
 }
 
 export async function fetchCategories(signal?: AbortSignal): Promise<string[]> {
-  const res = await fetch(`${API_BASE}/categories`, {
-    signal,
-    cache: "no-store",
-  });
+  const url = new URL(`${API_BASE}/categories`, window.location.origin);
+  const res = await fetch(url.toString(), { signal });
   if (!res.ok) throw new Error(`categories fetch failed: ${res.status}`);
   const body = (await res.json()) as CategoriesResponse;
   return body.categories;
 }
 
-export function formatPrice(price: number | null, currency: Currency | null): string {
+export function formatPrice(
+  price: number | null,
+  currency: Currency | null,
+): string {
   if (price == null) return "—";
   if (currency === "LBP") {
     return `${Math.round(price).toLocaleString()} LBP`;
