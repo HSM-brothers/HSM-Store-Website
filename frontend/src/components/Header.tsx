@@ -25,16 +25,10 @@ function CartIcon() {
 const THEME_ORDER: ThemeMode[] = ["light", "dark", "system"];
 
 type Props = {
-  categories: string[];
-  activeCategory: string | null;
-  onSelectCategory: (category: string | null) => void;
+  onHome: () => void;
 };
 
-export default function Header({
-  categories,
-  activeCategory,
-  onSelectCategory,
-}: Props) {
+export default function Header({ onHome }: Props) {
   const { t, locale, setLocale } = useI18n();
   const { theme, setTheme } = useTheme();
   const { count, openCart } = useCart();
@@ -47,12 +41,11 @@ export default function Header({
 
   return (
     <header className="sticky top-0 z-30 border-b border-line bg-bg/90 backdrop-blur">
-      {/* Row 1: wordmark + controls */}
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-5 px-5 py-3.5">
         {/* Wordmark */}
         <button
           type="button"
-          onClick={() => onSelectCategory(null)}
+          onClick={onHome}
           className="flex shrink-0 flex-col items-start leading-none"
         >
           <span className="font-serif text-2xl font-semibold tracking-tight">
@@ -98,47 +91,6 @@ export default function Header({
           </button>
         </div>
       </div>
-
-      {/* Row 2: full category nav (wraps so every category is visible) */}
-      <nav className="mx-auto flex w-full max-w-6xl flex-wrap items-center gap-x-1 gap-y-1 border-t border-line px-4 py-2">
-        <NavLink
-          label={t("home.allCategories")}
-          active={activeCategory === null}
-          onClick={() => onSelectCategory(null)}
-        />
-        {categories.map((cat) => (
-          <NavLink
-            key={cat}
-            label={cat}
-            active={activeCategory === cat}
-            onClick={() => onSelectCategory(cat)}
-          />
-        ))}
-      </nav>
     </header>
-  );
-}
-
-function NavLink({
-  label,
-  active,
-  onClick,
-}: {
-  label: string;
-  active: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`whitespace-nowrap rounded-full px-3 py-1.5 text-sm transition-colors ${
-        active
-          ? "font-semibold text-fg"
-          : "font-medium text-fg-muted hover:text-fg"
-      }`}
-    >
-      {label}
-    </button>
   );
 }

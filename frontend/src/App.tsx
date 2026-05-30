@@ -90,11 +90,7 @@ export default function App() {
 
   return (
     <div className="flex min-h-full flex-col">
-      <Header
-        categories={categories}
-        activeCategory={activeCategory}
-        onSelectCategory={selectCategory}
-      />
+      <Header onHome={() => selectCategory(null)} />
 
       {/* Hero */}
       <section>
@@ -102,7 +98,7 @@ export default function App() {
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-fg-muted">
             {t("hero.eyebrow")}
           </p>
-          <h1 className="mt-4 max-w-3xl font-serif text-4xl font-semibold leading-[1.05] tracking-tight sm:text-6xl">
+          <h1 className="mt-4 max-w-3xl font-serif text-3xl font-semibold leading-[1.08] tracking-tight sm:text-6xl sm:leading-[1.05]">
             {t("hero.titleLine1")}
             <br />
             {t("hero.titleLine2")}
@@ -111,15 +107,28 @@ export default function App() {
             {t("hero.subtitle")}
           </p>
 
-          {/* Search */}
-          <div className="mt-7 max-w-md">
+          {/* Search + category filter */}
+          <div className="mt-7 flex max-w-2xl flex-col gap-3 sm:flex-row">
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder={t("nav.searchPlaceholder")}
               aria-label={t("nav.searchPlaceholder")}
-              className="h-11 w-full rounded-full border border-line bg-card px-5 text-sm text-fg shadow-sm outline-none transition-colors focus:border-fg"
+              className="h-11 w-full rounded-full border border-line bg-card px-5 text-sm text-fg shadow-sm outline-none transition-colors focus:border-fg sm:flex-1"
             />
+            <select
+              value={activeCategory ?? ""}
+              onChange={(e) => setActiveCategory(e.target.value || null)}
+              aria-label={t("nav.filter")}
+              className="h-11 w-full rounded-full border border-line bg-card px-5 text-sm text-fg shadow-sm outline-none transition-colors focus:border-fg sm:w-56"
+            >
+              <option value="">{t("nav.allCategories")}</option>
+              {categories.map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
       </section>
@@ -192,7 +201,7 @@ export default function App() {
                 {t("home.noResults")}
               </div>
             ) : (
-              <section className="grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-4">
+              <section className="grid grid-cols-2 gap-x-3 gap-y-6 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4">
                 {flat.map((p) => (
                   <ProductCard key={p.id} product={p} onAdd={onAdd} />
                 ))}

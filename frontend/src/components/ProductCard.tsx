@@ -10,7 +10,7 @@ export default function ProductCard({ product: p, onAdd }: Props) {
   const { t } = useI18n();
 
   return (
-    <article className="group flex flex-col overflow-hidden rounded-2xl bg-card shadow-[0_1px_2px_rgba(0,0,0,0.04)] ring-1 ring-line transition-shadow duration-200 hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)]">
+    <article className="group @container flex flex-col overflow-hidden rounded-2xl bg-card shadow-[0_1px_2px_rgba(0,0,0,0.04)] ring-1 ring-line transition-shadow duration-200 hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)]">
       <div className="relative aspect-square w-full overflow-hidden bg-white">
         {p.image_url ? (
           <img
@@ -44,18 +44,21 @@ export default function ProductCard({ product: p, onAdd }: Props) {
           ) : null}
         </h3>
 
-        <div className="mt-auto flex items-center justify-between gap-2 pt-3">
-          <span className="text-sm font-semibold">
-            {formatPrice(p.selling_price, p.selling_price_currency)}
-          </span>
-          <button
-            type="button"
-            disabled={!p.in_stock}
-            onClick={() => onAdd(p)}
-            className="h-8 rounded-full bg-accent px-4 text-xs font-semibold text-accent-fg transition-opacity hover:opacity-85 disabled:cursor-not-allowed disabled:bg-bg-subtle disabled:text-fg-muted"
-          >
-            {t("home.addToCart")}
-          </button>
+        <div className="mt-auto pt-3">
+          {/* Price + Add: stacks on narrow cards, inline once there's room. */}
+          <div className="flex flex-col gap-2 @[12rem]:flex-row @[12rem]:items-center @[12rem]:justify-between">
+            <span className="text-sm font-semibold">
+              {formatPrice(p.selling_price, p.selling_price_currency)}
+            </span>
+            <button
+              type="button"
+              disabled={!p.in_stock}
+              onClick={() => onAdd(p)}
+              className="h-9 w-full rounded-full bg-accent px-4 text-xs font-semibold text-accent-fg transition-opacity hover:opacity-85 disabled:cursor-not-allowed disabled:bg-bg-subtle disabled:text-fg-muted @[12rem]:h-8 @[12rem]:w-auto"
+            >
+              {t("home.addToCart")}
+            </button>
+          </div>
         </div>
       </div>
     </article>

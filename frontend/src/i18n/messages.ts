@@ -16,6 +16,8 @@ type Messages = {
     brand: string;
     brandTagline: string;
     searchPlaceholder: string;
+    filter: string;
+    allCategories: string;
     language: string;
     theme: string;
     light: string;
@@ -61,6 +63,8 @@ export const messages: Record<AppLocale, Messages> = {
       brand: "HSM",
       brandTagline: "FRESH PICKS. EVERY DAY.",
       searchPlaceholder: "Search products…",
+      filter: "Filter by category",
+      allCategories: "All categories",
       language: "Language",
       theme: "Theme",
       light: "Light",
@@ -105,6 +109,8 @@ export const messages: Record<AppLocale, Messages> = {
       brand: "HSM",
       brandTagline: "منتجات مختارة. كل يوم.",
       searchPlaceholder: "ابحث عن المنتجات…",
+      filter: "تصفية حسب الفئة",
+      allCategories: "كل الفئات",
       language: "اللغة",
       theme: "المظهر",
       light: "فاتح",
