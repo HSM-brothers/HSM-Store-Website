@@ -37,12 +37,12 @@ export default function Header({ onHome }: Props) {
     const idx = THEME_ORDER.indexOf(theme);
     setTheme(THEME_ORDER[(idx + 1) % THEME_ORDER.length]);
   };
+
   const themeGlyph = theme === "light" ? "☀" : theme === "dark" ? "☾" : "◐";
 
   return (
     <header className="sticky top-0 z-30 border-b border-line bg-bg/90 backdrop-blur">
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-5 px-5 py-3.5">
-        {/* Wordmark */}
         <button
           type="button"
           onClick={onHome}
@@ -57,7 +57,6 @@ export default function Header({ onHome }: Props) {
           </span>
         </button>
 
-        {/* Controls */}
         <div className="flex shrink-0 items-center gap-1">
           <button
             type="button"
@@ -94,3 +93,4 @@ export default function Header({ onHome }: Props) {
     </header>
   );
 }
+

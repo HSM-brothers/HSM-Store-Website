@@ -11,12 +11,16 @@ export function getDirection(locale: AppLocale): "rtl" | "ltr" {
 }
 
 type Messages = {
+  common: {
+    clear: string;
+  };
   nav: {
     title: string;
     brand: string;
     brandTagline: string;
     searchPlaceholder: string;
     filter: string;
+    categories: string;
     allCategories: string;
     language: string;
     theme: string;
@@ -58,12 +62,16 @@ type Messages = {
 
 export const messages: Record<AppLocale, Messages> = {
   en: {
+    common: {
+      clear: "Clear",
+    },
     nav: {
       title: "HSM",
       brand: "HSM",
       brandTagline: "FRESH PICKS. EVERY DAY.",
       searchPlaceholder: "Search products…",
       filter: "Filter by category",
+      categories: "Categories",
       allCategories: "All categories",
       language: "Language",
       theme: "Theme",
@@ -104,12 +112,16 @@ export const messages: Record<AppLocale, Messages> = {
     },
   },
   ar: {
+    common: {
+      clear: "مسح",
+    },
     nav: {
       title: "HSM",
       brand: "HSM",
       brandTagline: "منتجات مختارة. كل يوم.",
       searchPlaceholder: "ابحث عن المنتجات…",
       filter: "تصفية حسب الفئة",
+      categories: "التصنيفات",
       allCategories: "كل الفئات",
       language: "اللغة",
       theme: "المظهر",
@@ -151,7 +163,6 @@ export const messages: Record<AppLocale, Messages> = {
   },
 };
 
-// Locale-aware "N results" string (handles Arabic plural forms).
 export function formatResults(locale: AppLocale, count: number): string {
   if (locale === "ar") {
     if (count === 0) return "لا نتائج";
@@ -165,7 +176,6 @@ export function formatResults(locale: AppLocale, count: number): string {
   return `${count} results`;
 }
 
-// Locale-aware "N products" string.
 export function formatCount(locale: AppLocale, count: number): string {
   if (locale === "ar") {
     if (count === 1) return "منتج واحد";
@@ -175,3 +185,4 @@ export function formatCount(locale: AppLocale, count: number): string {
   }
   return count === 1 ? "1 product" : `${count} products`;
 }
+

@@ -3,16 +3,14 @@ import { useI18n } from "@/i18n/I18nProvider";
 import { useCart } from "@/components/CartProvider";
 import { buildWhatsAppUrl, formatLineTotal, formatSubtotal } from "@/lib/cart";
 
-// Replace via VITE_WHATSAPP_NUMBER at build time.
 const WHATSAPP_NUMBER =
   import.meta.env.VITE_WHATSAPP_NUMBER || "+96100000000";
 
 export default function CartDrawer() {
-  const { t, dir } = useI18n();
+  const { t } = useI18n();
   const { state, dispatch, isOpen, closeCart } = useCart();
   const [customerName, setCustomerName] = useState("");
 
-  // Lock body scroll while open.
   useEffect(() => {
     const prev = document.body.style.overflow;
     document.body.style.overflow = isOpen ? "hidden" : prev;
@@ -21,7 +19,6 @@ export default function CartDrawer() {
     };
   }, [isOpen]);
 
-  // Close on Escape.
   useEffect(() => {
     if (!isOpen) return;
     const onKey = (e: KeyboardEvent) => {
@@ -32,8 +29,6 @@ export default function CartDrawer() {
   }, [isOpen, closeCart]);
 
   if (!isOpen) return null;
-
-  const sideClass = dir === "rtl" ? "left-0 border-r" : "right-0 border-l";
 
   const handleCheckout = () => {
     if (state.items.length === 0) return;
@@ -53,9 +48,7 @@ export default function CartDrawer() {
         onClick={closeCart}
         className="absolute inset-0 bg-black/40 backdrop-blur-sm"
       />
-      <aside
-        className={`absolute top-0 ${sideClass} flex h-full w-full max-w-md flex-col border-line bg-bg shadow-2xl`}
-      >
+      <aside className="absolute right-0 top-0 flex h-full w-full max-w-md flex-col border-l border-line bg-bg shadow-2xl">
         <header className="flex items-center justify-between gap-3 border-b border-line px-5 py-4">
           <h2 className="text-base font-semibold">{t("cart.title")}</h2>
           <button
@@ -70,7 +63,9 @@ export default function CartDrawer() {
         <div className="flex-1 overflow-y-auto px-5 py-4">
           {state.items.length === 0 ? (
             <div className="flex h-full flex-col items-center justify-center text-center">
-              <div className="text-4xl">🛒</div>
+              <div aria-hidden className="text-4xl">
+                🛒
+              </div>
               <p className="mt-3 text-sm text-fg-muted">{t("cart.empty")}</p>
             </div>
           ) : (
@@ -109,10 +104,10 @@ export default function CartDrawer() {
                       <button
                         type="button"
                         onClick={() => dispatch({ type: "remove", id: item.id })}
-                        className="rounded-full px-2 py-1 text-xs text-fg-muted transition-colors hover:bg-bg-subtle hover:text-red-600"
+                        className="rounded-full px-2 py-1 text-xs text-fg-muted transition-colors hover:bg-bg-subtle hover:text-red-500"
                         aria-label={t("cart.remove")}
                       >
-                        ✕
+                        ×
                       </button>
                     </div>
                     <div className="mt-2 flex items-center justify-between">
@@ -170,9 +165,8 @@ export default function CartDrawer() {
             <button
               type="button"
               onClick={handleCheckout}
-              className="flex h-11 items-center justify-center gap-2 rounded-full bg-green-600 px-4 text-sm font-semibold text-white transition-colors hover:bg-green-700"
+              className="flex h-11 items-center justify-center rounded-full bg-green-600 px-4 text-sm font-semibold text-white transition-colors hover:bg-green-700"
             >
-              <span aria-hidden>📲</span>
               {t("cart.checkoutWhatsApp")}
             </button>
             <button
@@ -188,3 +182,4 @@ export default function CartDrawer() {
     </div>
   );
 }
+

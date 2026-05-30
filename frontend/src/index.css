@@ -4,17 +4,17 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  /* Warm, curated cream palette (things.com-inspired). */
-  --bg: #f5f4ef;
-  --bg-subtle: #eeece4;
+  /* Black + orange storefront palette (light). */
+  --bg: #fafafa;
+  --bg-subtle: #f4f4f5;
   --card: #ffffff;
-  --fg: #181818;
-  --fg-muted: #6f6f68;
-  --line: #e7e4dc;
-  --pill: #f1e7c4;
-  --pill-fg: #6d5618;
-  --accent: #181818;
-  --accent-fg: #ffffff;
+  --fg: #09090b;
+  --fg-muted: #52525b;
+  --line: #e4e4e7;
+  --pill: #fff7ed;
+  --pill-fg: #9a3412;
+  --accent: #f97316;
+  --accent-fg: #09090b;
 
   --font-latin: "Be Vietnam Pro", ui-sans-serif, system-ui, -apple-system,
     "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -24,16 +24,17 @@
 }
 
 .dark {
-  --bg: #141413;
-  --bg-subtle: #1d1d1b;
-  --card: #1e1e1c;
-  --fg: #f1efe9;
-  --fg-muted: #9b988e;
-  --line: #2c2b27;
-  --pill: #3a3210;
-  --pill-fg: #e8d9a0;
-  --accent: #f1efe9;
-  --accent-fg: #141413;
+  /* Black + orange storefront palette (dark). */
+  --bg: #09090b;
+  --bg-subtle: #111113;
+  --card: #0f0f12;
+  --fg: #fafafa;
+  --fg-muted: #a1a1aa;
+  --line: #27272a;
+  --pill: #1f1408;
+  --pill-fg: #fdba74;
+  --accent: #f97316;
+  --accent-fg: #09090b;
 }
 
 /* Arabic / RTL switches the UI font. */
@@ -83,6 +84,6 @@ body {
 }
 
 ::selection {
-  background: var(--fg);
-  color: var(--bg);
+  background: var(--accent);
+  color: var(--accent-fg);
 }
