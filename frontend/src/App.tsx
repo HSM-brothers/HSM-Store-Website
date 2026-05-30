@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import Header from "@/components/Header";
 import CartDrawer from "@/components/CartDrawer";
 import CategorySidebar from "@/components/CategorySidebar";
+import ShopShellLayout from "@/components/ShopShellLayout";
 import ProductCard from "@/components/ProductCard";
 import { useCart } from "@/components/CartProvider";
 import { useI18n } from "@/i18n/I18nProvider";
@@ -140,87 +141,91 @@ export default function App() {
         )}
 
         {status === "ready" && (
-          <div
-            dir="ltr"
-            className="grid grid-cols-1 gap-6 lg:grid-cols-[260px_1fr]"
-          >
-            <CategorySidebar
-              categories={categories}
-              activeCategory={activeCategory}
-              onSelect={selectCategory}
-            />
-
-            <div dir={dir} className="min-w-0">
-              {showGrouped &&
-                grouped.map(({ category, items }) => (
-                  <section
-                    key={category}
-                    className="border-t border-line py-8 first:border-t-0"
-                  >
-                    <div className="mb-4 flex items-center justify-between gap-3">
-                      <div className="flex items-center gap-3">
-                        <span className="inline-flex rounded-md bg-pill px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-pill-fg">
-                          {categoryLabel(locale, category)}
-                        </span>
-                        <span className="text-sm text-fg-muted">
-                          {count(items.length)}
-                        </span>
-                      </div>
-                      {items.length > ROW_PREVIEW && (
-                        <button
-                          type="button"
-                          onClick={() => selectCategory(category)}
-                          className="text-sm font-medium text-fg-muted transition-colors hover:text-fg"
-                        >
-                          {t("home.viewAll")} {arrow}
-                        </button>
-                      )}
-                    </div>
-
-                    <div className="no-scrollbar -mx-5 flex snap-x gap-5 overflow-x-auto px-5 pb-1">
-                      {items.slice(0, ROW_PREVIEW).map((p) => (
-                        <div
-                          key={p.id}
-                          className="w-44 shrink-0 snap-start sm:w-52"
-                        >
-                          <ProductCard product={p} onAdd={onAdd} />
+          <div dir="ltr">
+            <ShopShellLayout
+              sidebarEyebrow={t("nav.categories")}
+              collapseLabel={t("common.collapse")}
+              expandLabel={t("common.expand")}
+              sidebar={
+                <CategorySidebar
+                  categories={categories}
+                  activeCategory={activeCategory}
+                  onSelect={selectCategory}
+                />
+              }
+            >
+              <div dir={dir} className="min-w-0">
+                {showGrouped &&
+                  grouped.map(({ category, items }) => (
+                    <section
+                      key={category}
+                      className="border-t border-line py-8 first:border-t-0"
+                    >
+                      <div className="mb-4 flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-3">
+                          <span className="inline-flex rounded-md bg-pill px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-pill-fg">
+                            {categoryLabel(locale, category)}
+                          </span>
+                          <span className="text-sm text-fg-muted">
+                            {count(items.length)}
+                          </span>
                         </div>
-                      ))}
-                    </div>
-                  </section>
-                ))}
+                        {items.length > ROW_PREVIEW && (
+                          <button
+                            type="button"
+                            onClick={() => selectCategory(category)}
+                            className="text-sm font-medium text-fg-muted transition-colors hover:text-fg"
+                          >
+                            {t("home.viewAll")} {arrow}
+                          </button>
+                        )}
+                      </div>
 
-              {!showGrouped && (
-                <>
-                  <div className="flex flex-wrap items-center justify-between gap-3 pb-6 pt-2">
-                    <h2 className="flex items-center gap-3 text-lg font-semibold">
-                      {activeCategory ? (
-                        <span className="inline-flex rounded-md bg-pill px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-pill-fg">
-                          {categoryLabel(locale, activeCategory)}
-                        </span>
-                      ) : (
-                        <span>{t("home.allCategories")}</span>
-                      )}
-                      <span className="text-sm font-normal text-fg-muted">
-                        {results(flat.length)}
-                      </span>
-                    </h2>
-                  </div>
-
-                  {flat.length === 0 ? (
-                    <div className="rounded-2xl border border-line px-4 py-16 text-center text-sm text-fg-muted">
-                      {t("home.noResults")}
-                    </div>
-                  ) : (
-                    <section className="grid grid-cols-2 gap-x-3 gap-y-6 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4">
-                      {flat.map((p) => (
-                        <ProductCard key={p.id} product={p} onAdd={onAdd} />
-                      ))}
+                      <div className="no-scrollbar -mx-5 flex snap-x gap-5 overflow-x-auto px-5 pb-1">
+                        {items.slice(0, ROW_PREVIEW).map((p) => (
+                          <div
+                            key={p.id}
+                            className="w-44 shrink-0 snap-start sm:w-52"
+                          >
+                            <ProductCard product={p} onAdd={onAdd} />
+                          </div>
+                        ))}
+                      </div>
                     </section>
-                  )}
-                </>
-              )}
-            </div>
+                  ))}
+
+                {!showGrouped && (
+                  <>
+                    <div className="flex flex-wrap items-center justify-between gap-3 pb-6 pt-2">
+                      <h2 className="flex items-center gap-3 text-lg font-semibold">
+                        {activeCategory ? (
+                          <span className="inline-flex rounded-md bg-pill px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-pill-fg">
+                            {categoryLabel(locale, activeCategory)}
+                          </span>
+                        ) : (
+                          <span>{t("home.allCategories")}</span>
+                        )}
+                        <span className="text-sm font-normal text-fg-muted">
+                          {results(flat.length)}
+                        </span>
+                      </h2>
+                    </div>
+
+                    {flat.length === 0 ? (
+                      <div className="rounded-2xl border border-line px-4 py-16 text-center text-sm text-fg-muted">
+                        {t("home.noResults")}
+                      </div>
+                    ) : (
+                      <section className="grid grid-cols-2 gap-x-3 gap-y-6 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4">
+                        {flat.map((p) => (
+                          <ProductCard key={p.id} product={p} onAdd={onAdd} />
+                        ))}
+                      </section>
+                    )}
+                  </>
+                )}
+              </div>
+            </ShopShellLayout>
           </div>
         )}
       </main>

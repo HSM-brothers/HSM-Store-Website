@@ -88,9 +88,77 @@ body {
   color: var(--accent-fg);
 }
 
-/* Shop sidebar (ported from ecommerce-template styles, adapted to our tokens). */
+/* Shop shell + sidebar (ported from ecommerce-template styles, adapted to our tokens). */
+.shop-shell {
+  display: flex;
+  align-items: flex-start;
+  padding: 0;
+  gap: 0;
+}
+
+.shop-shell__sidebar {
+  position: sticky;
+  top: 6rem;
+  align-self: start;
+  height: calc(100vh - 6rem);
+  z-index: 30;
+  width: 19.5rem;
+  transition:
+    width 220ms ease,
+    opacity 220ms ease;
+  will-change: width;
+  padding: 1.25rem 0 1.5rem 0;
+}
+
+.shop-shell[data-sidebar="collapsed"] .shop-shell__sidebar {
+  width: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.shop-shell__main {
+  flex: 1;
+  min-width: 0;
+  padding-left: 1.5rem;
+}
+
+.shop-sidebar__expand {
+  position: sticky;
+  top: 6.75rem;
+  z-index: 25;
+  width: 2.9rem;
+  height: 2.9rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--fg) 12%, transparent);
+  background: color-mix(in srgb, var(--card) 92%, transparent);
+  color: var(--fg);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    background 160ms ease,
+    color 160ms ease;
+}
+
+.shop-sidebar__expand:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 22px 50px rgba(15, 23, 42, 0.16);
+  background: color-mix(in srgb, var(--fg) 4%, transparent);
+}
+
+.shop-shell[data-sidebar="collapsed"] .shop-sidebar {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
 .shop-sidebar {
   height: 100%;
+  display: flex;
+  flex-direction: column;
   padding: 1rem;
   border: 1px solid color-mix(in srgb, var(--fg) 10%, transparent);
   border-radius: 24px;
@@ -149,6 +217,45 @@ body {
 .shop-sidebar__inner {
   display: grid;
   gap: 1.15rem;
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding-right: 0.25rem;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--fg) 28%, transparent) transparent;
+}
+
+.shop-sidebar__inner::-webkit-scrollbar {
+  width: 10px;
+}
+
+.shop-sidebar__inner::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.shop-sidebar__inner::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--fg) 22%, transparent);
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+
+.shop-sidebar__inner:hover {
+  scrollbar-color: color-mix(in srgb, var(--fg) 40%, transparent) transparent;
+}
+
+.shop-sidebar__inner:hover::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--fg) 32%, transparent);
+  background-clip: content-box;
+}
+
+/* Optional utility: keep scrolling but hide scrollbars (use on any scroll container). */
+.scrollbar-hidden {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none;
 }
 
 .shop-category-tree {
@@ -225,4 +332,33 @@ body {
   display: grid;
   place-items: center;
   color: color-mix(in srgb, var(--fg) 55%, transparent);
+}
+
+.shop-category-tree__chev {
+  display: inline-block;
+  transition: transform 160ms ease;
+}
+
+.shop-category-tree__chev.is-open {
+  transform: rotate(90deg);
+}
+
+.shop-category-tree__toggle:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--accent) 35%, transparent);
+  outline-offset: 2px;
+}
+
+@media (max-width: 1024px) {
+  .shop-shell {
+    display: block;
+  }
+
+  .shop-shell__sidebar,
+  .shop-sidebar__expand {
+    display: none;
+  }
+
+  .shop-shell__main {
+    padding-left: 0;
+  }
 }
