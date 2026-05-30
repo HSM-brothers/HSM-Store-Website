@@ -1,5 +1,6 @@
 import { useI18n } from "@/i18n/I18nProvider";
 import { categoryLabel } from "@/lib/categories";
+import { useMemo, useState } from "react";
 
 type Props = {
   categories: string[];
@@ -12,54 +13,85 @@ export default function CategorySidebar({
   activeCategory,
   onSelect,
 }: Props) {
-  const { t, locale, dir } = useI18n();
+  const { t, locale } = useI18n();
+  const [collapsed, setCollapsed] = useState(false);
+
+  const items = useMemo(
+    () =>
+      categories.map((cat) => ({
+        value: cat,
+        label: categoryLabel(locale, cat),
+      })),
+    [categories, locale],
+  );
 
   return (
     <aside className="lg:sticky lg:top-24">
-      <div className="rounded-3xl border border-line bg-card p-4">
-        <div className="mb-3 flex items-baseline justify-between gap-3">
-          <div dir={dir} className="text-sm font-semibold">
-            {t("nav.categories")}
-          </div>
-          {activeCategory && (
-            <button
-              type="button"
-              onClick={() => onSelect(null)}
-              className="text-xs font-medium text-accent transition-colors hover:opacity-85"
-            >
-              {t("common.clear")}
-            </button>
-          )}
-        </div>
-
-        <nav dir={dir} className="flex flex-col gap-1" aria-label={t("nav.filter")}>
+      <div className="shop-sidebar">
+        <div className="shop-sidebar__header">
+          <p className="shop-sidebar__eyebrow">{t("nav.categories")}</p>
           <button
             type="button"
-            onClick={() => onSelect(null)}
-            className={`flex h-10 items-center justify-between rounded-2xl px-3 text-sm transition-colors ${
-              activeCategory === null
-                ? "bg-accent text-accent-fg"
-                : "hover:bg-bg-subtle"
-            }`}
+            className="icon-button shop-sidebar__collapse"
+            aria-label={collapsed ? t("common.expand") : t("common.collapse")}
+            title={collapsed ? t("common.expand") : t("common.collapse")}
+            onClick={() => setCollapsed((v) => !v)}
           >
-            <span className="truncate">{t("nav.allCategories")}</span>
-          </button>
-
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              type="button"
-              onClick={() => onSelect(cat === activeCategory ? null : cat)}
-              className={`flex h-10 items-center justify-between rounded-2xl px-3 text-sm transition-colors ${
-                activeCategory === cat
-                  ? "bg-accent text-accent-fg"
-                  : "hover:bg-bg-subtle"
-              }`}
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 24 24"
+              width="18"
+              height="18"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             >
-              <span className="truncate">{categoryLabel(locale, cat)}</span>
-            </button>
-          ))}
-        </nav>
+              <path d="M3 12h4" />
+              <path d="M7 5v14" />
+              <path d="M21 5H11a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10" />
+            </svg>
+          </button>
+        </div>
+
+        {!collapsed && (
+          <div className="shop-sidebar__inner">
+            <nav className="shop-category-tree" aria-label={t("nav.categories")}>
+              <button
+                type="button"
+                className={`shop-category-tree__all${activeCategory === null ? " is-active" : ""}`}
+                onClick={() => onSelect(null)}
+              >
+                <span className="shop-category-tree__label">
+                  {t("nav.allCategories")}
+                </span>
+              </button>
+
+              {items.map((cat) => {
+                const active = activeCategory === cat.value;
+                return (
+                  <div key={cat.value} className="shop-category-tree__group">
+                    <div className="shop-category-tree__row">
+                      <button
+                        type="button"
+                        className={`shop-category-tree__parent${active ? " is-active" : ""}`}
+                        onClick={() => onSelect(active ? null : cat.value)}
+                      >
+                        <span className="shop-category-tree__label">
+                          {cat.label}
+                        </span>
+                      </button>
+                      <span className="shop-category-tree__toggle" aria-hidden="true">
+                        <span className="shop-category-tree__chev">{"›"}</span>
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </nav>
+          </div>
+        )}
       </div>
     </aside>
   );

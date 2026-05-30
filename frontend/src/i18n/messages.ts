@@ -13,6 +13,8 @@ export function getDirection(locale: AppLocale): "rtl" | "ltr" {
 type Messages = {
   common: {
     clear: string;
+    collapse: string;
+    expand: string;
   };
   nav: {
     title: string;
@@ -64,6 +66,8 @@ export const messages: Record<AppLocale, Messages> = {
   en: {
     common: {
       clear: "Clear",
+      collapse: "Collapse",
+      expand: "Expand",
     },
     nav: {
       title: "HSM",
@@ -114,6 +118,8 @@ export const messages: Record<AppLocale, Messages> = {
   ar: {
     common: {
       clear: "مسح",
+      collapse: "طيّ",
+      expand: "توسيع",
     },
     nav: {
       title: "HSM",
@@ -185,4 +191,3 @@ export function formatCount(locale: AppLocale, count: number): string {
   }
   return count === 1 ? "1 product" : `${count} products`;
 }
-
