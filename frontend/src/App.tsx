@@ -1,19 +1,23 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Header from "@/components/Header";
 import CartDrawer from "@/components/CartDrawer";
+import CategorySidebar from "@/components/CategorySidebar";
+import ShopShellLayout from "@/components/ShopShellLayout";
 import ProductCard from "@/components/ProductCard";
 import { useCart } from "@/components/CartProvider";
 import { useI18n } from "@/i18n/I18nProvider";
+import { categoryLabel } from "@/lib/categories";
 import { fetchCategories, fetchProducts, type Product } from "@/lib/products";
+import { ChevronRight } from "lucide-react";
 
 type Status = "loading" | "ready" | "error";
 
-// How many products to preview in each category row before "View all".
 const ROW_PREVIEW = 12;
 
 export default function App() {
-  const { t, dir, results, count } = useI18n();
+  const { t, dir, locale, results, count } = useI18n();
   const { dispatch, openCart } = useCart();
+  const closeCatalogButtonRef = useRef<HTMLButtonElement | null>(null);
 
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
@@ -22,6 +26,7 @@ export default function App() {
 
   const [query, setQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [catalogOpen, setCatalogOpen] = useState(false);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -43,6 +48,20 @@ export default function App() {
     return () => controller.abort();
   }, []);
 
+  useEffect(() => {
+    if (!catalogOpen) return;
+    closeCatalogButtonRef.current?.focus();
+  }, [catalogOpen]);
+
+  useEffect(() => {
+    if (!catalogOpen) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setCatalogOpen(false);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [catalogOpen]);
+
   const onAdd = (product: Product) => {
     dispatch({ type: "add", product });
     openCart();
@@ -62,18 +81,15 @@ export default function App() {
     p.sku_barcode.toLowerCase().includes(q) ||
     (p.category ?? "").toLowerCase().includes(q);
 
-  // Flat list: used when searching or when a single category is selected.
   const flat = useMemo(
     () =>
       products.filter(
         (p) =>
           (!activeCategory || p.category === activeCategory) && matchesQuery(p),
       ),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [products, activeCategory, q],
+    [products, activeCategory, query],
   );
 
-  // Grouped rows: used on the landing view (no category, no search).
   const grouped = useMemo(
     () =>
       categories
@@ -92,7 +108,6 @@ export default function App() {
     <div className="flex min-h-full flex-col">
       <Header onHome={() => selectCategory(null)} />
 
-      {/* Hero */}
       <section>
         <div className="mx-auto w-full max-w-6xl px-5 pb-6 pt-12 sm:pt-16">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-fg-muted">
@@ -107,7 +122,6 @@ export default function App() {
             {t("hero.subtitle")}
           </p>
 
-          {/* Search + category filter */}
           <div className="mt-7 flex max-w-2xl flex-col gap-3 sm:flex-row">
             <input
               value={query}
@@ -116,19 +130,6 @@ export default function App() {
               aria-label={t("nav.searchPlaceholder")}
               className="h-11 w-full rounded-full border border-line bg-card px-5 text-sm text-fg shadow-sm outline-none transition-colors focus:border-fg sm:flex-1"
             />
-            <select
-              value={activeCategory ?? ""}
-              onChange={(e) => setActiveCategory(e.target.value || null)}
-              aria-label={t("nav.filter")}
-              className="h-11 w-full rounded-full border border-line bg-card px-5 text-sm text-fg shadow-sm outline-none transition-colors focus:border-fg sm:w-56"
-            >
-              <option value="">{t("nav.allCategories")}</option>
-              {categories.map((cat) => (
-                <option key={cat} value={cat}>
-                  {cat}
-                </option>
-              ))}
-            </select>
           </div>
         </div>
       </section>
@@ -137,77 +138,156 @@ export default function App() {
         {status === "loading" && <RowSkeleton />}
 
         {status === "error" && (
-          <div className="rounded-2xl border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900/40 dark:bg-red-950/30 dark:text-red-200">
+          <div className="rounded-2xl border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700">
             {t("home.error")}
             {error ? ` (${error})` : ""}
           </div>
         )}
 
-        {/* Grouped landing view */}
-        {status === "ready" &&
-          showGrouped &&
-          grouped.map(({ category, items }) => (
-            <section key={category} className="border-t border-line py-8 first:border-t-0">
-              <div className="mb-4 flex items-center justify-between gap-3">
-                <div className="flex items-center gap-3">
-                  <span className="inline-flex rounded-md bg-pill px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-pill-fg">
-                    {category}
-                  </span>
-                  <span className="text-sm text-fg-muted">
-                    {count(items.length)}
-                  </span>
-                </div>
-                {items.length > ROW_PREVIEW && (
-                  <button
-                    type="button"
-                    onClick={() => selectCategory(category)}
-                    className="text-sm font-medium text-fg-muted transition-colors hover:text-fg"
-                  >
-                    {t("home.viewAll")} {arrow}
-                  </button>
-                )}
-              </div>
-
-              <div className="no-scrollbar -mx-5 flex snap-x gap-5 overflow-x-auto px-5 pb-1">
-                {items.slice(0, ROW_PREVIEW).map((p) => (
-                  <div key={p.id} className="w-44 shrink-0 snap-start sm:w-52">
-                    <ProductCard product={p} onAdd={onAdd} />
+        {status === "ready" && (
+          <div dir="ltr">
+            <ShopShellLayout
+              sidebarEyebrow={t("nav.categories")}
+              collapseLabel={t("common.collapse")}
+              expandLabel={t("common.expand")}
+              sidebar={
+                <CategorySidebar
+                  categories={categories}
+                  activeCategory={activeCategory}
+                  onSelect={selectCategory}
+                />
+              }
+            >
+              <aside
+                className="mobile-catalog-sidebar__drawer"
+                aria-label={t("nav.categories")}
+                aria-hidden={!catalogOpen}
+              >
+                <div
+                  className="mobile-catalog-sidebar__panel"
+                  data-state={catalogOpen ? "open" : "closed"}
+                  role="dialog"
+                  aria-modal="true"
+                  aria-label={t("nav.categories")}
+                  onClick={(event) => {
+                    if (event.target === event.currentTarget) setCatalogOpen(false);
+                  }}
+                >
+                  <div className="mobile-catalog-sidebar__sheet" dir={dir}>
+                    <header className="mobile-catalog-sidebar__header">
+                      <h2 className="mobile-catalog-sidebar__title">
+                        {t("nav.categories")}
+                      </h2>
+                      <button
+                        ref={closeCatalogButtonRef}
+                        type="button"
+                        className="icon-button"
+                        aria-label={t("common.close")}
+                        onClick={() => setCatalogOpen(false)}
+                      >
+                        ×
+                      </button>
+                    </header>
+                    <div className="mobile-catalog-sidebar__content">
+                      <CategorySidebar
+                        categories={categories}
+                        activeCategory={activeCategory}
+                        onSelect={(category) => {
+                          selectCategory(category);
+                          setCatalogOpen(false);
+                        }}
+                      />
+                    </div>
                   </div>
-                ))}
-              </div>
-            </section>
-          ))}
+                </div>
+              </aside>
 
-        {/* Flat grid view (category selected or searching) */}
-        {status === "ready" && !showGrouped && (
-          <>
-            <div className="flex flex-wrap items-center justify-between gap-3 pb-6 pt-2">
-              <h2 className="flex items-center gap-3 text-lg font-semibold">
-                {activeCategory ? (
-                  <span className="inline-flex rounded-md bg-pill px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-pill-fg">
-                    {activeCategory}
-                  </span>
-                ) : (
-                  <span>{t("home.allCategories")}</span>
+              <button
+                type="button"
+                className="mobile-catalog-notch"
+                aria-label={catalogOpen ? t("common.close") : t("nav.categories")}
+                onClick={() => setCatalogOpen((value) => !value)}
+              >
+                <ChevronRight
+                  size={18}
+                  aria-hidden="true"
+                  className={`mobile-catalog-notch__icon${dir === "rtl" ? " is-rtl" : ""}`}
+                />
+              </button>
+
+              <div dir={dir} className="min-w-0">
+                {showGrouped &&
+                  grouped.map(({ category, items }) => (
+                    <section
+                      key={category}
+                      className="border-t border-line py-8 first:border-t-0"
+                    >
+                      <div className="mb-4 flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-3">
+                          <span className="inline-flex rounded-md bg-pill px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-pill-fg">
+                            {categoryLabel(locale, category)}
+                          </span>
+                          <span className="text-sm text-fg-muted">
+                            {count(items.length)}
+                          </span>
+                        </div>
+                        {items.length > ROW_PREVIEW && (
+                          <button
+                            type="button"
+                            onClick={() => selectCategory(category)}
+                            className="text-sm font-medium text-fg-muted transition-colors hover:text-fg"
+                          >
+                            {t("home.viewAll")} {arrow}
+                          </button>
+                        )}
+                      </div>
+
+                      <div className="no-scrollbar -mx-5 flex snap-x gap-5 overflow-x-auto px-5 pb-1">
+                        {items.slice(0, ROW_PREVIEW).map((p) => (
+                          <div
+                            key={p.id}
+                            className="w-44 shrink-0 snap-start sm:w-52"
+                          >
+                            <ProductCard product={p} onAdd={onAdd} />
+                          </div>
+                        ))}
+                      </div>
+                    </section>
+                  ))}
+
+                {!showGrouped && (
+                  <>
+                    <div className="flex flex-wrap items-center justify-between gap-3 pb-6 pt-2">
+                      <h2 className="flex items-center gap-3 text-lg font-semibold">
+                        {activeCategory ? (
+                          <span className="inline-flex rounded-md bg-pill px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-pill-fg">
+                            {categoryLabel(locale, activeCategory)}
+                          </span>
+                        ) : (
+                          <span>{t("home.allCategories")}</span>
+                        )}
+                        <span className="text-sm font-normal text-fg-muted">
+                          {results(flat.length)}
+                        </span>
+                      </h2>
+                    </div>
+
+                    {flat.length === 0 ? (
+                      <div className="rounded-2xl border border-line px-4 py-16 text-center text-sm text-fg-muted">
+                        {t("home.noResults")}
+                      </div>
+                    ) : (
+                      <section className="grid grid-cols-2 gap-x-3 gap-y-6 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4">
+                        {flat.map((p) => (
+                          <ProductCard key={p.id} product={p} onAdd={onAdd} />
+                        ))}
+                      </section>
+                    )}
+                  </>
                 )}
-                <span className="text-sm font-normal text-fg-muted">
-                  {results(flat.length)}
-                </span>
-              </h2>
-            </div>
-
-            {flat.length === 0 ? (
-              <div className="rounded-2xl border border-line px-4 py-16 text-center text-sm text-fg-muted">
-                {t("home.noResults")}
               </div>
-            ) : (
-              <section className="grid grid-cols-2 gap-x-3 gap-y-6 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4">
-                {flat.map((p) => (
-                  <ProductCard key={p.id} product={p} onAdd={onAdd} />
-                ))}
-              </section>
-            )}
-          </>
+            </ShopShellLayout>
+          </div>
         )}
       </main>
 
