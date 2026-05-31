@@ -25,9 +25,7 @@ export default function HorizontalScrollRow({
 
     const amount = Math.max(280, Math.floor(el.clientWidth * 0.85));
     const sign = direction === "next" ? 1 : -1;
-    const rtlFlip = dir === "rtl" ? -1 : 1;
-
-    el.scrollBy({ left: sign * rtlFlip * amount, behavior: "smooth" });
+    el.scrollBy({ left: sign * amount, behavior: "smooth" });
   };
 
   return (
