@@ -122,6 +122,12 @@ body {
   padding-left: 1.5rem;
 }
 
+.shop-shell__mainInner {
+  width: min(calc(100% - 0rem), 72rem);
+  margin: 0 auto;
+  padding: 0 1.25rem 3rem;
+}
+
 .shop-sidebar__expand {
   position: sticky;
   top: 6.75rem;
@@ -363,7 +369,9 @@ body {
   left: 0.9rem;
   bottom: 1.25rem;
   z-index: 60;
-  width: 2.9rem;
+  height: 2.9rem;
+  width: auto;
+  padding: 0 1.05rem 0 0.75rem;
   height: 2.9rem;
   border-radius: 999px;
   border: 1px solid color-mix(in srgb, var(--fg) 12%, transparent);
@@ -382,6 +390,8 @@ body {
 @media (max-width: 1024px) {
   .mobile-catalog-notch {
     display: grid;
+    grid-auto-flow: column;
+    gap: 0.55rem;
   }
 }
 
@@ -402,6 +412,14 @@ html[dir="rtl"] .mobile-catalog-notch {
 
 .mobile-catalog-notch__icon.is-rtl {
   transform: rotate(180deg);
+}
+
+.mobile-catalog-notch__label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--fg);
+  white-space: nowrap;
 }
 
 .mobile-catalog-sidebar__drawer {
@@ -498,4 +516,50 @@ html[dir="rtl"] .mobile-catalog-sidebar__sheet {
   border-radius: 999px;
   border: 3px solid transparent;
   background-clip: content-box;
+}
+
+/* Desktop arrows for horizontal product rows. */
+.hscroll {
+  position: relative;
+}
+
+.hscroll__button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--fg) 14%, transparent);
+  background: color-mix(in srgb, var(--card) 88%, transparent);
+  color: var(--fg);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.22);
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    background 160ms ease;
+}
+
+.hscroll__button:hover {
+  transform: translateY(calc(-50% - 1px));
+  box-shadow: 0 16px 38px rgba(0, 0, 0, 0.3);
+  background: color-mix(in srgb, var(--fg) 5%, var(--card));
+}
+
+.hscroll__button--left {
+  left: -0.65rem;
+}
+
+.hscroll__button--right {
+  right: -0.65rem;
+}
+
+@media (max-width: 1024px) {
+  .hscroll__button {
+    display: none;
+  }
 }
