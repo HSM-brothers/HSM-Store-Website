@@ -77,7 +77,7 @@ export default function ShopShellLayout({
             <PanelLeft size={18} aria-hidden="true" />
           </button>
         ) : null}
-        {children}
+        <div className="shop-shell__mainInner">{children}</div>
       </div>
     </section>
   );

@@ -122,6 +122,12 @@ body {
   padding-left: 1.5rem;
 }
 
+.shop-shell__mainInner {
+  width: min(calc(100% - 0rem), 72rem);
+  margin: 0 auto;
+  padding: 0 1.25rem 3rem;
+}
+
 .shop-sidebar__expand {
   position: sticky;
   top: 6.75rem;

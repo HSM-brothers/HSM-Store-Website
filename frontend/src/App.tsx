@@ -134,7 +134,7 @@ export default function App() {
         </div>
       </section>
 
-      <main className="mx-auto w-full max-w-6xl flex-1 px-5 pb-16">
+      <main className="w-full flex-1 pb-16">
         {status === "loading" && <RowSkeleton />}
 
         {status === "error" && (
