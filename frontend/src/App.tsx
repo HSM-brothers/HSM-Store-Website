@@ -248,7 +248,7 @@ export default function App() {
                       label={categoryLabel(locale, category)}
                       viewportClassName="no-scrollbar -mx-5 flex snap-x gap-5 overflow-x-auto px-5 pb-1"
                     >
-                      {items.slice(0, ROW_PREVIEW).map((p) => (
+                      {items.map((p) => (
                         <div
                           key={p.id}
                           className="w-44 shrink-0 snap-start sm:w-52"
