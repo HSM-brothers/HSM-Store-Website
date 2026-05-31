@@ -214,6 +214,9 @@ export default function App() {
                   aria-hidden="true"
                   className={`mobile-catalog-notch__icon${dir === "rtl" ? " is-rtl" : ""}`}
                 />
+                <span className="mobile-catalog-notch__label" aria-hidden="true">
+                  {catalogOpen ? t("common.close") : t("nav.categories")}
+                </span>
               </button>
 
               <div dir={dir} className="min-w-0">

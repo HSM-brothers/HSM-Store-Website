@@ -369,7 +369,9 @@ body {
   left: 0.9rem;
   bottom: 1.25rem;
   z-index: 60;
-  width: 2.9rem;
+  height: 2.9rem;
+  width: auto;
+  padding: 0 1.05rem 0 0.75rem;
   height: 2.9rem;
   border-radius: 999px;
   border: 1px solid color-mix(in srgb, var(--fg) 12%, transparent);
@@ -388,6 +390,8 @@ body {
 @media (max-width: 1024px) {
   .mobile-catalog-notch {
     display: grid;
+    grid-auto-flow: column;
+    gap: 0.55rem;
   }
 }
 
@@ -408,6 +412,14 @@ html[dir="rtl"] .mobile-catalog-notch {
 
 .mobile-catalog-notch__icon.is-rtl {
   transform: rotate(180deg);
+}
+
+.mobile-catalog-notch__label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--fg);
+  white-space: nowrap;
 }
 
 .mobile-catalog-sidebar__drawer {
