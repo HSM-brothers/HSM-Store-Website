@@ -15,6 +15,7 @@ type Messages = {
     clear: string;
     collapse: string;
     expand: string;
+    close: string;
   };
   nav: {
     title: string;
@@ -68,6 +69,7 @@ export const messages: Record<AppLocale, Messages> = {
       clear: "Clear",
       collapse: "Collapse",
       expand: "Expand",
+      close: "Close",
     },
     nav: {
       title: "HSM",
@@ -120,6 +122,7 @@ export const messages: Record<AppLocale, Messages> = {
       clear: "مسح",
       collapse: "طيّ",
       expand: "توسيع",
+      close: "إغلاق",
     },
     nav: {
       title: "HSM",
