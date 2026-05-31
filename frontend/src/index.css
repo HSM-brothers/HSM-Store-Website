@@ -221,40 +221,11 @@ body {
   min-height: 0;
   overflow: auto;
   padding-right: 0.25rem;
-  scrollbar-width: thin;
-  scrollbar-color: color-mix(in srgb, var(--fg) 28%, transparent) transparent;
-}
-
-.shop-sidebar__inner::-webkit-scrollbar {
-  width: 10px;
-}
-
-.shop-sidebar__inner::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.shop-sidebar__inner::-webkit-scrollbar-thumb {
-  background: color-mix(in srgb, var(--fg) 22%, transparent);
-  border-radius: 999px;
-  border: 3px solid transparent;
-  background-clip: content-box;
-}
-
-.shop-sidebar__inner:hover {
-  scrollbar-color: color-mix(in srgb, var(--fg) 40%, transparent) transparent;
-}
-
-.shop-sidebar__inner:hover::-webkit-scrollbar-thumb {
-  background: color-mix(in srgb, var(--fg) 32%, transparent);
-  background-clip: content-box;
-}
-
-/* Optional utility: keep scrolling but hide scrollbars (use on any scroll container). */
-.scrollbar-hidden {
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
-.scrollbar-hidden::-webkit-scrollbar {
+
+.shop-sidebar__inner::-webkit-scrollbar {
   display: none;
 }
 
