@@ -505,3 +505,49 @@ html[dir="rtl"] .mobile-catalog-sidebar__sheet {
   border: 3px solid transparent;
   background-clip: content-box;
 }
+
+/* Desktop arrows for horizontal product rows. */
+.hscroll {
+  position: relative;
+}
+
+.hscroll__button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--fg) 14%, transparent);
+  background: color-mix(in srgb, var(--card) 88%, transparent);
+  color: var(--fg);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.22);
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    background 160ms ease;
+}
+
+.hscroll__button:hover {
+  transform: translateY(calc(-50% - 1px));
+  box-shadow: 0 16px 38px rgba(0, 0, 0, 0.3);
+  background: color-mix(in srgb, var(--fg) 5%, var(--card));
+}
+
+.hscroll__button--left {
+  left: -0.65rem;
+}
+
+.hscroll__button--right {
+  right: -0.65rem;
+}
+
+@media (max-width: 1024px) {
+  .hscroll__button {
+    display: none;
+  }
+}

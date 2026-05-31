@@ -4,6 +4,7 @@ import CartDrawer from "@/components/CartDrawer";
 import CategorySidebar from "@/components/CategorySidebar";
 import ShopShellLayout from "@/components/ShopShellLayout";
 import ProductCard from "@/components/ProductCard";
+import HorizontalScrollRow from "@/components/HorizontalScrollRow";
 import { useCart } from "@/components/CartProvider";
 import { useI18n } from "@/i18n/I18nProvider";
 import { categoryLabel } from "@/lib/categories";
@@ -240,20 +241,24 @@ export default function App() {
                             {t("home.viewAll")} {arrow}
                           </button>
                         )}
-                      </div>
+                    </div>
 
-                      <div className="no-scrollbar -mx-5 flex snap-x gap-5 overflow-x-auto px-5 pb-1">
-                        {items.slice(0, ROW_PREVIEW).map((p) => (
-                          <div
-                            key={p.id}
-                            className="w-44 shrink-0 snap-start sm:w-52"
-                          >
-                            <ProductCard product={p} onAdd={onAdd} />
-                          </div>
-                        ))}
-                      </div>
-                    </section>
-                  ))}
+                    <HorizontalScrollRow
+                      dir={dir}
+                      label={categoryLabel(locale, category)}
+                      viewportClassName="no-scrollbar -mx-5 flex snap-x gap-5 overflow-x-auto px-5 pb-1"
+                    >
+                      {items.slice(0, ROW_PREVIEW).map((p) => (
+                        <div
+                          key={p.id}
+                          className="w-44 shrink-0 snap-start sm:w-52"
+                        >
+                          <ProductCard product={p} onAdd={onAdd} />
+                        </div>
+                      ))}
+                    </HorizontalScrollRow>
+                  </section>
+                ))}
 
                 {!showGrouped && (
                   <>
