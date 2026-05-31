@@ -219,14 +219,36 @@ body {
   gap: 1.15rem;
   flex: 1;
   min-height: 0;
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
   padding-right: 0.25rem;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--fg) 28%, transparent) transparent;
 }
 
 .shop-sidebar__inner::-webkit-scrollbar {
-  display: none;
+  width: 10px;
+  height: 0;
+}
+
+.shop-sidebar__inner::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.shop-sidebar__inner::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--fg) 22%, transparent);
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+
+.shop-sidebar__inner:hover {
+  scrollbar-color: color-mix(in srgb, var(--fg) 40%, transparent) transparent;
+}
+
+.shop-sidebar__inner:hover::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--fg) 32%, transparent);
+  background-clip: content-box;
 }
 
 .shop-category-tree {
